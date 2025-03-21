@@ -24,6 +24,6 @@ const bookSchema = new Schema<datatype>({
 
 })
 
-const ExBook = mongoose.models.Book|| mongoose.model<datatype>("Book" , bookSchema)
+const ExBook =mongoose.model<datatype>("Book" , bookSchema)
 
 export default ExBook; 
