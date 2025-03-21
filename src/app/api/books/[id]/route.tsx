@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectDb } from "@/lib/db";
 import ExBook from "@/model/bookModel";
-
-
+import { authenticateUser } from "@/app/middleware/protectrouter";
 
 export async function GET(
-    req: Request,
+    req: NextRequest,
     { params }: { params: { id: string } }
  ) {
     await connectDb();
@@ -14,7 +13,6 @@ export async function GET(
   
     try {
 
-      
       const finddata = await ExBook.findById(params.id);
       
   
@@ -34,13 +32,31 @@ export async function GET(
 
 
 
-  export async function PUT(req:Request , {params}:{params:{id:string}}) {
+  export async function PUT(req:NextRequest , {params}:{params:{id:string}}) {
 
 connectDb();
 
 
 
 try {
+
+
+  const user = await authenticateUser(req);
+  const autBook = await ExBook.findById(params.id)
+
+ console.log("at update",user);
+ 
+ 
+  if(autBook.user.toString()  !==    user._id.toString()){
+    console.log("unauthorizes");
+    return NextResponse.json({ error: "Permission denied" }, { status: 403 });
+  
+  }
+console.log("authorzed");
+
+
+
+
   let updateddata =await req.json();
 
   await ExBook.findByIdAndUpdate(params.id,updateddata,{new:true})
@@ -51,6 +67,9 @@ try {
     return NextResponse.json({ message: "Updated successfully"}, { status: 200 });
 
 } catch (error) {
+
+  console.log("internal error ", error );
+  
   return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 }
 
@@ -60,11 +79,26 @@ try {
 
 
 
-  export async function DELETE(req:Request , {params}:{params:{id:string}}){
+  export async function DELETE(req:NextRequest , {params}:{params:{id:string}}){
  
- await connectDb();
 
+    
 try {
+
+  await connectDb();
+
+
+
+  const user = await authenticateUser(req);
+  const autBook = await ExBook.findById(params.id)
+
+  if(autBook.user.toString()  !==    user._id.toString()){
+    console.log("unauthorizes");
+    return NextResponse.json({ error: "Permission denied" }, { status: 403 });
+  
+  }
+
+
 await ExBook.findByIdAndDelete(params.id)
 return NextResponse.json({ message: "Book deleted successfully" }, { status: 200 });
   

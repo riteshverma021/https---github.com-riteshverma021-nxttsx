@@ -15,6 +15,6 @@ const userSchema = new Schema<datatype>({
     email: { type: String, required: true, unique: true }, 
 
 })
-const User  =   mongoose.models.User   || mongoose.model<datatype>("User",userSchema)
+const User  = mongoose.models.User|| mongoose.model<datatype>("User",userSchema)
 
 export default User

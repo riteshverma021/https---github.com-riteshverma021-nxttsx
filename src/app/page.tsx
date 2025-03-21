@@ -24,7 +24,7 @@ export default function Home() {
   if (!auth) {
       throw new Error("useContext(authContext) must be used within an AuthProvider");
   }
-  const { isAuthenticated, setIsAuthenticated } = auth;
+  const { isAuthenticated, setIsAuthenticated ,checkAuth } = auth;
 
   const router = useRouter();
   const [data, setData] = useState<Book[]>([]);
@@ -56,18 +56,41 @@ export default function Home() {
 
     
   }, []);
+
+  
 const handleDelete=async(id:string)=>{
 
+try {
+
+
   const res = await fetch(`/api/books/${id}`,{method:"DELETE"})
+  const dataa  = await res.json()
+
 
 if(res.ok){
 setData(data.filter((book)=>book._id!=id))
 
 }
 
+else if(!res.ok){
+
+  alert(dataa.error||"del faild")
 
 }
 
+  
+} catch (error) {
+  console.error("eror",error)
+}
+
+
+}
+
+
+useEffect(() => {
+  
+ checkAuth()
+}, [checkAuth]);
 
 
 const logutFunc=async()=>{

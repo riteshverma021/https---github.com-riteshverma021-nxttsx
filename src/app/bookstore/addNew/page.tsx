@@ -26,16 +26,40 @@ const Page = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+   try {
     e.preventDefault();
     console.log("Data sent to backend:", data);
 
-    await fetch("/api/books", {
+    const res =     await fetch("/api/books", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
 
-    router.push("/")
+
+    
+    if(res.status===200){
+      alert("added");
+      router.push("/")
+    }
+
+
+
+      else  if(res.status === 401) {
+        alert("Unauthorized! Please log in to add a book."); }
+    
+
+   } catch (error:any) {
+
+
+    console.error("Error adding book:", error.response?.data?.error);
+
+
+    if (error.response?.status === 401) {
+      alert("Unauthorized! Please log in to add a book.");
+  }
+
+   }
   };
 
  

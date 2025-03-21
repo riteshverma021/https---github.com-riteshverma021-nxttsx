@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+
+
+ 
+import { authenticateUser } from "@/app/middleware/protectrouter";
+
 
 
 
@@ -7,17 +11,18 @@ const SECRET_KEY =   "ritesh";
 
 export async function GET(req: NextRequest) {
     try {
+const userD  = await authenticateUser(req)
+console.log("waht i getting at the check auth", userD);
 
+        
 
-        const token = req.cookies.get("jwt")?.value; // Get token from cookies
-
-        if (!token) {
-            return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
+        if (!userD) {
+            return NextResponse.json({ isAuthenticated: false }, { status: 401 });
         }
 
-        const decoded = jwt.verify(token, SECRET_KEY)
+  
 
-        return NextResponse.json({ isAuthenticated: true, user: decoded });
+        return NextResponse.json({ isAuthenticated: true, user: userD });
 
     } catch (error: any) {
         return NextResponse.json({ isAuthenticated: false }, { status: 401 });

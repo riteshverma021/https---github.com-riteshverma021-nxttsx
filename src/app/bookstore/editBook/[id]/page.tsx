@@ -61,11 +61,11 @@ const Page = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(fetchData),
       });
-      if (response.ok) {
+      if (response.status===200) {
   
         router.push('/');
-      } else {
-        throw new Error("Failed to update book");
+      }else if(response.status===403){
+        alert("not authorized")
       }
 
       
